@@ -16,14 +16,16 @@ RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTr
 
 # Application code
 COPY backend/ backend/
+COPY entrypoint.sh entrypoint.sh
 
-# Create non-root user and data directories
+# Create non-root user and data directories, make entrypoint executable
 RUN useradd -r -u 1000 appuser && \
     mkdir -p backend/data/uploads backend/data/processed && \
-    chown -R appuser:appuser backend/data
+    chown -R appuser:appuser backend/data && \
+    chmod +x entrypoint.sh
 
 EXPOSE 8000
 
 USER appuser
 
-CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["./entrypoint.sh"]
